@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Meta de Ahorro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="contenedor">
+    <h1>💰 Mi Meta de Ahorro</h1>
+    <p class="subtitulo">Contanos tu objetivo y armamos el plan.</p>
+
+    <form id="form-meta">
+      <label>
+        ¿Qué querés lograr?
+        <input type="text" id="objetivo" placeholder="Ej: comprar una moto" required>
+      </label>
+
+      <label>
+        Monto objetivo ($)
+        <input type="number" id="montoObjetivo" min="0" step="1" required>
+      </label>
+
+      <label>
+        Dinero que ya tenés ($)
+        <input type="number" id="dineroInicial" min="0" step="1" value="0" required>
+      </label>
+
+      <label>
+        ¿Cuánto podés ahorrar por mes? ($)
+        <input type="number" id="ahorroMensual" min="0" step="1" required>
+      </label>
+
+      <label>
+        Plazo (meses)
+        <input type="number" id="plazoMeses" min="1" step="1" required>
+      </label>
+
+      <button type="submit">Calcular plan</button>
+    </form>
+
+    <div id="resultado" class="resultado oculto"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

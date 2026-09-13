@@ -1,0 +1,14 @@
+{
+  "name": "app-ahorro-metas",
+  "version": "1.0.0",
+  "description": "App de ahorro por metas con IA",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^4.19.2"
+  }
+}
