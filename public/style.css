@@ -3,12 +3,17 @@
 }
 
 :root {
-  --bg-start: #f4f0ff;
-  --bg-end: #fff0f6;
+  --bg-start: #ede4ff;
+  --bg-mid: #f6ecfb;
+  --bg-end: #fdf1fb;
   --ink: #241f3d;
   --ink-soft: #6b6489;
-  --primary: #7c3aed;
-  --primary-dark: #5b21b6;
+  --primary: #6d28d9;
+  --primary-light: #a78bfa;
+  --primary-dark: #4c1d95;
+  --gold: #c9971f;
+  --gold-light: #f0c04f;
+  --gold-soft: #fdf5e2;
   --coral: #ff6b6b;
   --emerald: #10b981;
   --emerald-soft: #e3faf0;
@@ -21,7 +26,8 @@
 body {
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(160deg, var(--bg-start) 0%, var(--bg-end) 100%);
+  background: linear-gradient(160deg, var(--bg-start) 0%, var(--bg-mid) 55%, var(--bg-end) 100%);
+  background-attachment: fixed;
   color: var(--ink);
   min-height: 100vh;
   display: flex;
@@ -48,17 +54,17 @@ h1 {
 }
 
 .logo {
-  width: 96px;
-  height: 96px;
-  border-radius: 22px;
+  width: 88px;
+  height: 88px;
+  border-radius: 26px;
   object-fit: cover;
-  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.25);
+  box-shadow: 0 10px 28px rgba(109, 40, 217, 0.28), 0 2px 6px rgba(109, 40, 217, 0.18);
 }
 
 .subtitulo {
   color: var(--ink-soft);
   margin-top: 0;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   font-size: 0.95rem;
   text-align: center;
 }
@@ -67,11 +73,11 @@ form {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  background: var(--surface);
-  padding: 24px;
-  border-radius: 24px;
-  box-shadow: 0 12px 32px rgba(124, 58, 237, 0.1);
-  border-top: 4px solid var(--primary);
+  background: linear-gradient(180deg, #ffffff 0%, #fdfbff 100%);
+  padding: 26px;
+  border-radius: 26px;
+  box-shadow: 0 16px 36px rgba(109, 40, 217, 0.14), 0 2px 8px rgba(109, 40, 217, 0.08);
+  border: 1px solid rgba(124, 58, 237, 0.08);
 }
 
 label {
@@ -87,16 +93,18 @@ input {
   font-family: 'Inter', sans-serif;
   font-size: 1rem;
   padding: 13px 14px;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1.5px solid var(--surface-line);
   font-weight: 400;
   background: #fbfaff;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 input:focus {
   outline: none;
-  border-color: var(--primary);
+  border-color: var(--primary-light);
   background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.18);
 }
 
 button {
@@ -110,12 +118,20 @@ button {
   border: none;
   border-radius: 999px;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.35);
+  box-shadow: 0 10px 22px rgba(109, 40, 217, 0.32);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 button:active {
-  transform: translateY(1px);
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.32);
+}
+
+/* El botón de "Guardar meta" marca el momento de comprometerse con la meta: acento dorado */
+#btn-guardar-meta {
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+  box-shadow: 0 10px 22px rgba(201, 151, 31, 0.35);
+  color: #4a3204;
 }
 
 .resultado {
@@ -123,7 +139,7 @@ button:active {
   background: var(--surface);
   border-radius: 24px;
   padding: 24px;
-  box-shadow: 0 12px 32px rgba(124, 58, 237, 0.08);
+  box-shadow: 0 12px 32px rgba(109, 40, 217, 0.08);
 }
 
 .resultado.oculto {
@@ -158,20 +174,56 @@ button:active {
   font-family: 'Space Grotesk', sans-serif;
 }
 
+/* La fila de Progreso es siempre la primera: le damos peso de "dato hero" */
+.resultado-simulacion .fila:first-of-type,
+.tarjeta-meta .fila:first-of-type {
+  padding: 6px 0 14px 0;
+  border-bottom: none;
+  align-items: baseline;
+}
+
+.resultado-simulacion .fila:first-of-type span,
+.tarjeta-meta .fila:first-of-type span {
+  font-size: 0.82rem;
+  text-transform: none;
+  color: var(--ink-soft);
+}
+
+.resultado-simulacion .fila:first-of-type strong,
+.tarjeta-meta .fila:first-of-type strong {
+  font-size: 1.7rem;
+  color: var(--gold);
+  font-weight: 700;
+}
+
 .barra-progreso {
+  position: relative;
   width: 100%;
-  height: 16px;
+  height: 14px;
   background: var(--surface-line);
   border-radius: 999px;
-  overflow: hidden;
-  margin: 14px 0;
+  overflow: visible;
+  margin: 6px 0 22px 0;
 }
 
 .barra-progreso-interna {
+  position: relative;
   height: 100%;
-  background: linear-gradient(90deg, var(--primary) 0%, var(--coral) 100%);
-  transition: width 0.4s ease;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+  transition: width 0.5s ease;
   border-radius: 999px;
+  overflow: visible;
+}
+
+/* Una banderita marca hasta dónde se llegó: refuerza "voy en camino" en vez de "gráfico bancario" */
+.barra-progreso-interna::after {
+  content: '🚩';
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translate(50%, -60%);
+  font-size: 1.1rem;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
 }
 
 .estado {
@@ -206,8 +258,8 @@ button:active {
 .lista-metas {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 18px;
+  margin-bottom: 18px;
 }
 
 .cargando {
@@ -217,11 +269,11 @@ button:active {
 }
 
 .tarjeta-meta {
-  background: var(--surface);
+  background: linear-gradient(180deg, #ffffff 0%, #fdfbff 100%);
   border-radius: 24px;
-  padding: 20px;
-  box-shadow: 0 12px 32px rgba(124, 58, 237, 0.08);
-  border-top: 4px solid var(--primary);
+  padding: 22px;
+  box-shadow: 0 14px 34px rgba(109, 40, 217, 0.10), 0 2px 8px rgba(109, 40, 217, 0.06);
+  border: 1px solid rgba(124, 58, 237, 0.07);
 }
 
 .tarjeta-header {
@@ -270,10 +322,11 @@ button:active {
 }
 
 .resultado-simulacion {
-  background: var(--bg-start);
-  border-radius: 16px;
-  padding: 14px;
+  background: linear-gradient(160deg, var(--bg-start) 0%, #ffffff 70%);
+  border-radius: 18px;
+  padding: 16px 16px 8px 16px;
   margin-top: -4px;
+  border: 1px solid rgba(124, 58, 237, 0.10);
 }
 
 .resultado-simulacion.oculto {
@@ -284,7 +337,7 @@ button:active {
   width: 100%;
   background: transparent;
   color: var(--primary);
-  border: 2px dashed var(--primary);
+  border: 2px dashed var(--primary-light);
   box-shadow: none;
 }
 
@@ -298,15 +351,29 @@ button:active {
 .oculto {
   display: none;
 }
+
+/* Mensaje de IA como un globo de mensaje de un mentor, no un cartel bancario */
 .mensaje-ia {
-  margin-top: 16px;
+  position: relative;
+  margin-top: 22px;
   background: linear-gradient(135deg, #f5f0ff 0%, #fff0f6 100%);
-  border: 1.5px dashed var(--primary);
-  border-radius: 16px;
-  padding: 16px;
+  border: 1.5px solid rgba(124, 58, 237, 0.18);
+  border-radius: 18px;
+  border-top-left-radius: 4px;
+  padding: 16px 16px 16px 44px;
   font-size: 0.9rem;
   color: var(--primary-dark);
   font-style: italic;
+  box-shadow: 0 8px 20px rgba(109, 40, 217, 0.10);
+}
+
+.mensaje-ia::before {
+  content: '✨';
+  position: absolute;
+  left: 12px;
+  top: 16px;
+  font-style: normal;
+  font-size: 1rem;
 }
 
 .mensaje-ia.oculto {
