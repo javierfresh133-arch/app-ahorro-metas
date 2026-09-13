@@ -12,12 +12,16 @@
 <body>
   <div class="contenedor">
     <h1><img src="logo.png" alt="Logo Mi Meta de Ahorro" class="logo"><br>Mi Meta de Ahorro</h1>
-    <p class="subtitulo">Contanos tu objetivo y armamos el plan.</p>
+    <p class="subtitulo">Tus metas, guardadas para siempre.</p>
 
-    <form id="form-meta">
+    <div id="lista-metas" class="lista-metas"></div>
+
+    <button type="button" id="btn-nueva-meta" class="btn-nueva-meta">+ Nueva meta</button>
+
+    <form id="form-meta" class="oculto">
       <label>
         ¿Qué querés lograr?
-        <input type="text" id="objetivo" placeholder="Ej: comprar una moto" required>
+        <input type="text" id="nombre" placeholder="Ej: comprar una moto" required>
       </label>
 
       <label>
@@ -40,10 +44,14 @@
         <input type="number" id="plazoMeses" min="1" step="1" required>
       </label>
 
-      <button type="submit">Calcular plan</button>
-    </form>
+      <button type="button" id="btn-simular">Simular</button>
 
-    <div id="resultado" class="resultado oculto"></div>
+      <div id="resultado-simulacion" class="resultado-simulacion oculto"></div>
+
+      <button type="button" id="btn-guardar-meta" class="oculto">💾 Guardar meta</button>
+      <div id="mensaje-ia-simulacion" class="mensaje-ia oculto"></div>
+      <button type="button" id="btn-cancelar" class="btn-secundario">Cancelar</button>
+    </form>
   </div>
 
   <script src="app.js"></script>

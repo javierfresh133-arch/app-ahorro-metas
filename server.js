@@ -5,6 +5,23 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
+
+// Función auxiliar para hablar con la base de datos de Supabase
+async function supabaseFetch(path, options = {}) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer: options.prefer || 'return=representation',
+      ...(options.headers || {})
+    }
+  });
+  return response;
+}
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -144,6 +161,136 @@ app.post('/api/analizar', async (req, res) => {
   } catch (error) {
     console.error('Error al conectar con la IA:', error);
     res.status(500).json({ error: 'Hubo un problema al conectar con la IA.' });
+  }
+});
+
+// ---------------------------------------------------------
+// NUEVO: metas guardadas para siempre + depósitos (Supabase)
+// ---------------------------------------------------------
+
+// Listar todas las metas, cada una con el total ya depositado
+app.get('/api/metas', async (req, res) => {
+  try {
+    const respuesta = await supabaseFetch('metas?select=*,depositos(monto)&order=creado_en.desc');
+    const metas = await respuesta.json();
+
+    if (!respuesta.ok) {
+      console.error('Error al listar metas:', metas);
+      return res.status(502).json({ error: 'No se pudieron obtener las metas.' });
+    }
+
+    const metasConProgreso = metas.map((meta) => {
+      const totalAhorrado = meta.dinero_inicial + meta.depositos.reduce((suma, d) => suma + Number(d.monto), 0);
+      const plan = calcularPlan({
+        montoObjetivo: Number(meta.monto_objetivo),
+        dineroInicial: totalAhorrado,
+        ahorroMensual: Number(meta.ahorro_mensual),
+        plazoMeses: Number(meta.plazo_meses)
+      });
+      return {
+        id: meta.id,
+        nombre: meta.nombre,
+        montoObjetivo: Number(meta.monto_objetivo),
+        ahorroMensual: Number(meta.ahorro_mensual),
+        plazoMeses: Number(meta.plazo_meses),
+        totalAhorrado,
+        plan
+      };
+    });
+
+    res.json(metasConProgreso);
+  } catch (error) {
+    console.error('Error al conectar con la base de datos:', error);
+    res.status(500).json({ error: 'Hubo un problema al conectar con la base de datos.' });
+  }
+});
+
+// Crear una meta nueva
+app.post('/api/metas', async (req, res) => {
+  const { nombre, montoObjetivo, dineroInicial, ahorroMensual, plazoMeses } = req.body;
+
+  if (
+    typeof nombre !== 'string' ||
+    typeof montoObjetivo !== 'number' ||
+    typeof dineroInicial !== 'number' ||
+    typeof ahorroMensual !== 'number' ||
+    typeof plazoMeses !== 'number'
+  ) {
+    return res.status(400).json({ error: 'Faltan datos o tienen un formato inválido.' });
+  }
+
+  try {
+    const respuesta = await supabaseFetch('metas', {
+      method: 'POST',
+      body: JSON.stringify({
+        nombre,
+        monto_objetivo: montoObjetivo,
+        dinero_inicial: dineroInicial,
+        ahorro_mensual: ahorroMensual,
+        plazo_meses: plazoMeses
+      })
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      console.error('Error al crear meta:', data);
+      return res.status(502).json({ error: 'No se pudo crear la meta.' });
+    }
+
+    res.json(data[0]);
+  } catch (error) {
+    console.error('Error al conectar con la base de datos:', error);
+    res.status(500).json({ error: 'Hubo un problema al conectar con la base de datos.' });
+  }
+});
+
+// Agregar un depósito a una meta existente
+app.post('/api/metas/:id/depositos', async (req, res) => {
+  const { id } = req.params;
+  const { monto } = req.body;
+
+  if (typeof monto !== 'number' || monto <= 0) {
+    return res.status(400).json({ error: 'El monto tiene que ser un número mayor a 0.' });
+  }
+
+  try {
+    const respuesta = await supabaseFetch('depositos', {
+      method: 'POST',
+      body: JSON.stringify({ meta_id: Number(id), monto })
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      console.error('Error al agregar depósito:', data);
+      return res.status(502).json({ error: 'No se pudo guardar el depósito.' });
+    }
+
+    res.json(data[0]);
+  } catch (error) {
+    console.error('Error al conectar con la base de datos:', error);
+    res.status(500).json({ error: 'Hubo un problema al conectar con la base de datos.' });
+  }
+});
+
+// Borrar una meta
+app.delete('/api/metas/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const respuesta = await supabaseFetch(`metas?id=eq.${id}`, { method: 'DELETE' });
+
+    if (!respuesta.ok) {
+      const data = await respuesta.json();
+      console.error('Error al borrar meta:', data);
+      return res.status(502).json({ error: 'No se pudo borrar la meta.' });
+    }
+
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('Error al conectar con la base de datos:', error);
+    res.status(500).json({ error: 'Hubo un problema al conectar con la base de datos.' });
   }
 });
 
