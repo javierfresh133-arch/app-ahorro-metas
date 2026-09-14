@@ -182,6 +182,9 @@ function crearTarjetaMeta(meta) {
     <div class="fila"><span>Ahorrado</span><strong>${formatoMoneda(meta.totalAhorrado)}</strong></div>
     <div class="fila"><span>Te falta</span><strong>${formatoMoneda(meta.plan.restante)}</strong></div>
     <div class="fila"><span>Objetivo</span><strong>${formatoMoneda(meta.montoObjetivo)}</strong></div>
+    <div class="fila"><span>Por mes</span><strong>${formatoMoneda(meta.plan.ahorroPorMesNecesario)}</strong></div>
+    <div class="fila"><span>Por semana</span><strong>${formatoMoneda(meta.plan.ahorroPorSemanaNecesario)}</strong></div>
+    <div class="fila"><span>Por día</span><strong>${formatoMoneda(meta.plan.ahorroPorDiaNecesario)}</strong></div>
 
     <div class="agregar-deposito">
       <input type="number" min="1" step="1" placeholder="Monto ahorrado" class="input-deposito">
